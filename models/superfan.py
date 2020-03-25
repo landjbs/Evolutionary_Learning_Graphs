@@ -159,4 +159,6 @@ class Superfan(nn.Module):
                 plt.plot([arm_x, pool_x], [arm_y, pool_y], zorder=5)
                 r_acc += r_delt
             theta_acc += (theta - theta_delt)
+        plt.title('Network')
+        plt.axis('off')
         plt.show()
