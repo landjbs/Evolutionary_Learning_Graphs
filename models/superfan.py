@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
+from tqdm import trange
 
 
 def glorot_tensor(shape):
@@ -109,4 +111,13 @@ class Superfan(nn.Module):
         self.optimizer.step()
         return loss
 
-    def train()
+    def train(self, data, epochs, batch_size):
+        data_size = len(data)
+        losses = []
+        for _ in trange(epochs):
+            batch = data[torch.randint(0, data_size, size=batch_size)]
+            loss = self.train_on_batch(batch)
+            losses.append(loss.item())
+        plt.plot(losses)
+        plt.title('Losses')
+        plt.show()
