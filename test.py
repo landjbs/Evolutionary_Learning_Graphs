@@ -16,7 +16,7 @@ def make_batch(n, in_dim, out_dim):
 in_dim = 1
 out_dim = 1
 
-batch = make_batch(100, in_dim, out_dim)
+batch = make_batch(10000, in_dim, out_dim)
 
 # import matplotlib.pyplot as plt
 # x = [b[0].item() for b in batch]
@@ -26,4 +26,4 @@ batch = make_batch(100, in_dim, out_dim)
 
 z = Superfan(in_dim=in_dim, out_dim=out_dim, arm_num=4, arm_size=5)
 
-z.train(batch, 1000, 10)
+z.train(batch, 100, 10)

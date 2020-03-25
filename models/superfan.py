@@ -1,3 +1,4 @@
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -127,6 +128,20 @@ class Superfan(nn.Module):
         plt.title('Losses')
         plt.show()
 
+    # visualization
     def visualize(self):
-        plt.ylim((0,self.size))
-        plt.xlim((0,self.size))
+        # choose sizing for fan size
+        theta = (math.pi / self.arm_num)        # angle between each arm
+        theta_delt = (theta / 3)                # angle between arm and pool
+        r = 1                                   # max length of arm
+        c = (0, 0)                                 # center coordinates
+        # plot each arm
+        theta_acc = 0
+        for arm in self.arms:
+            
+
+
+        plt.ylim((-r, r))
+        plt.xlim((-r, r))
+        plt.scatter(x, y, s=60, c=c, edgecolor=edgeColor, linewidths=1.3,
+                        zorder=10)
