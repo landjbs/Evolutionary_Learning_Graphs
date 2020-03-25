@@ -101,7 +101,7 @@ class Superfan(nn.Module):
             delta_penalty = -torch.log(fx, y)
         # corr_penalty = self.corr_term * self.correlations()
         regularization_penalty = self.regularization_term * self.l_p_norm(2)
-        return (delta_penalty + regularization_penalty)
+        return delta_penalty # + regularization_penalty
 
     def train_on_batch(self, batch):
         '''
@@ -129,4 +129,5 @@ class Superfan(nn.Module):
         plt.show()
 
     def visualize(self):
-        
+        plt.ylim((0,self.size))
+        plt.xlim((0,self.size))
