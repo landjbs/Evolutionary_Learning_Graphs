@@ -136,6 +136,7 @@ class Superfan(nn.Module):
         r = 1                                   # max length of arm
         plt.ylim((-r, r))
         plt.xlim((-r, r))
+        plt.scatter(c[0], c[1], c='black', zorder=20)
         # choose sizing for fan size
         theta = (math.pi / self.arm_num)        # angle between each arm
         theta_delt = (theta / 3)                # angle between arm and pool
@@ -146,14 +147,14 @@ class Superfan(nn.Module):
         for arm in self.arms:
             pool_x = pool_r * math.cos(theta_acc)
             pool_y = pool_r * math.sin(theta_acc)
-            plt.scatter(pool_x, pool_y, zorder=10)
-            plt.plot([arm_x, arm_y], c, zorder=5)
+            plt.scatter(pool_x, pool_y, color='blue', zorder=10)
+            # plt.plot([pool_x, pool_y], c, zorder=5)
             theta_acc += theta_delt
             r_acc = c_rad
             for arm_node in range(self.arm_size):
                 arm_x = r_acc * math.cos(theta_acc)
                 arm_y = r_acc * math.sin(theta_acc)
-                plt.scatter(arm_x, arm_y, zorder=10)
-                plt.plot([arm_x, arm_y], [pool_x, pool_y], zorder=5)
+                plt.scatter(arm_x, arm_y, color='red', zorder=10)
+                # plt.plot([arm_x, arm_y], [pool_x, pool_y], zorder=5)
                 r_acc += r_delt
         plt.show()
