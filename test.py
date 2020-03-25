@@ -26,4 +26,4 @@ batch = make_batch(100, in_dim, out_dim)
 
 z = Superfan(in_dim=in_dim, out_dim=out_dim, arm_num=4, arm_size=5)
 
-z.train(batch, 10000, 10)
+z.train(batch, 1000, 10)

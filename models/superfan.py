@@ -66,8 +66,7 @@ class Superfan(nn.Module):
         aggregate_pooling = torch.cat(pools)
         fx = torch.mv(self.weights, aggregate_pooling) + self.bias
         fx = self.non_linearity(fx)
-        return fx
-
+        return fx, encodings
 
     def correlations(self):
         ''' Calculates cumulative correlations of arm weights '''
@@ -90,7 +89,7 @@ class Superfan(nn.Module):
             norm += torch.sum(mat.pow(p))
         return norm
 
-    def criterion(self, fx, y):
+    def criterion(self, fx, y, encodings):
         '''
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of correlations across latent subspaces.
@@ -110,8 +109,8 @@ class Superfan(nn.Module):
         self.optimizer.zero_grad()
         loss = 0
         for x, y in batch:
-            fx = self(x)
-            loss += self.criterion(fx, y)
+            fx, encodings = self(x)
+            loss += self.criterion(fx, y, encodings)
         loss.backward()
         self.optimizer.step()
         return loss
