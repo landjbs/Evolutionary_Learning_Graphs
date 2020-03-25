@@ -93,6 +93,7 @@ class Superfan(nn.Module):
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of correlations across latent subspaces.
         '''
+        print(fx, y)
         entropy_penalty = -torch.log(torch.dot(fx, y))
         corr_penalty = self.corr_term * self.correlations()
         regularization_penalty = self.regularization_term * self.l_p_norm(2)
@@ -115,7 +116,8 @@ class Superfan(nn.Module):
         data_size = len(data)
         losses = []
         for _ in trange(epochs):
-            batch = data[torch.randint(0, data_size, size=batch_size)]
+            batch = [data[i] for i in torch.randint(0, data_size,
+                                                    size=(batch_size,))]
             loss = self.train_on_batch(batch)
             losses.append(loss.item())
         plt.plot(losses)
