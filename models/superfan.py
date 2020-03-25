@@ -129,7 +129,12 @@ class Superfan(nn.Module):
         plt.show()
 
     # visualization
-    def visualize(self):
+    def visualize(self, colors):
+        '''
+        Visualizes network with variable number arms and arm sizes.
+        Args:
+            cDict:      Dict mapping 'center', 'pool_i', and 'arm_i' to colors
+        '''
         # basic params
         c = (0, 0)                              # center coordinates
         c_rad = 0.2                             # little radius around center
@@ -162,3 +167,9 @@ class Superfan(nn.Module):
         plt.title('Network')
         plt.axis('off')
         plt.show()
+
+    def visualize_signal_prop(self, x):
+        '''
+        Visualizes propagation of signal through network
+        '''
+        
