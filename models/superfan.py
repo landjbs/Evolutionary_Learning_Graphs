@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from base_model import Base_Model
-
 
 def glorot_tensor(shape):
     ''' Builds torch tensor randomly initialized with glorot '''
@@ -13,15 +11,16 @@ def glorot_tensor(shape):
 
 class Fan_Arm(nn.Module):
     '''
-    Arm of Superfan network
+    Arm of Superfan network. Data is passed into arm nodes for representation
+    and then pooled by pool node. Returns scalar of sub-classification.
     '''
     def __init__(self, in_dim, arm_size):
         super(Fan_Arm, self).__init__()
-        self.arm = glorot_tensor(shape=(in_dim, arm_size))
-        self.pool = glorot_tensor(shape=(arm_size,))
+        self.arm = glorot_tensor(shape=(arm_size, in_dim))
+        self.pool = torch.zeros(arm_size)
 
     def forward(self, x):
-        return 
+        return torch.dot(self.pool, torch.mv(self.arm, x))
 
 
 class Superfan(nn.Module):
@@ -40,4 +39,4 @@ class Superfan(nn.Module):
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of covariances between each arm latent subspace.
         '''
-        return torch.log(torch.dot(fx, y)) +
+        return torch.log(torch.dot(fx, y))
