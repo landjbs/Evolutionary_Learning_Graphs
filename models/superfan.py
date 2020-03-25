@@ -144,11 +144,15 @@ class Superfan(nn.Module):
         # plot each arm
         theta_acc = 0                           # accumulator for angles
         for arm in self.arms:
-            pool_x = pool_r * math.sin(theta_acc)
-            pool_y = poo_r * math.cos(theta_acc)
+            pool_x = pool_r * math.cos(theta_acc)
+            pool_y = poo_r * math.sin(theta_acc)
             theta_acc += theta_delt
-            for arm_node in range(len())
-                
+            r_acc = c_rad
+            for arm_node in range(self.arm_size):
+                arm_x = r_acc * math.cos(theta_acc)
+                arm_y = r_acc * math.sin(theta_acc)
+                r_acc += r_delt
+
 
         plt.scatter(x, y, s=60, c=c, edgecolor=edgeColor, linewidths=1.3,
                         zorder=10)
