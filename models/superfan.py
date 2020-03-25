@@ -61,8 +61,17 @@ class Superfan(nn.Module):
         fx = self.non_linearity(fx)
         return fx, encodings
 
-    def cov(self, A, B):
-        return
+    def correlations(self):
+        ''' Calculates cumulative correlations of arm weights '''
+        corr = 0
+        vars = [torch.var(arm.arm_weights) for arm in self.arms]
+        for i, i_arm in enumerate(self.arms):
+            for j, j_arm in enumerate(self.arms):
+                if (i != j):
+                    i_mean, j_mean = torch.mean(i_arm), torch.mean(j_arm)
+                    cov = torch.dot((i_arm - i_mean), (j_arm - j_mean))
+                    corr += (cov / torch.sqrt(vars[i], vars[j]))
+        return corr
 
     def l_p_norm(self, p):
         ''' Calcs p norm of all network weights '''
@@ -74,7 +83,7 @@ class Superfan(nn.Module):
     def criterion(self, fx, y, encodings):
         '''
         Criterion is sum of binary crossentropy between fx and y with scaled
-        sum of covariances across latent subspaces.
+        sum of correlations across latent subspaces.
         '''
         cov = torch.sum()
         return torch.log(torch.dot(fx, y))
