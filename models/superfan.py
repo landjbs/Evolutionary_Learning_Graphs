@@ -68,12 +68,6 @@ class Superfan(nn.Module):
         fx = self.non_linearity(fx)
         return fx, encodings
 
-    if self.out_dim==1:
-        def delta_criterion(self, fx, y):
-            return torch.pow(fx-y, 2)
-    else:
-        def delta_criterion(self, fx, y):
-            return -torch.log(fx, y)
 
     def correlations(self):
         ''' Calculates cumulative correlations of arm weights '''
@@ -101,10 +95,13 @@ class Superfan(nn.Module):
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of correlations across latent subspaces.
         '''
-        delta_penalty = self.delta_criterion(fx, y)
+        if self.out_dim==1:
+            delta_penalty = torch.pow(fx-y, 2)
+        else:
+            delta_penalty = -torch.log(fx, y)
         # corr_penalty = self.corr_term * self.correlations()
         regularization_penalty = self.regularization_term * self.l_p_norm(2)
-        return (entropy_penalty + regularization_penalty)
+        return (delta_penalty + regularization_penalty)
 
     def train_on_batch(self, batch):
         '''

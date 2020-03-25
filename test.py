@@ -13,7 +13,7 @@ def make_batch(n, in_dim, out_dim):
     return batch
 
 
-in_dim = 2
+in_dim = 1
 out_dim = 1
 
 batch = make_batch(100, in_dim, out_dim)
