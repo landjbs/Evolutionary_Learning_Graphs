@@ -36,8 +36,13 @@ class Superfan(nn.Module):
     '''
     Applies "superfan" architecture to regression.
     '''
-    def __init__(self, in_dim, out_dim, arm_num, arm_size, lr):
+    def __init__(self, in_dim, out_dim, arm_num, arm_size):
         super(Superfan, self).__init__()
+        # cache
+        self.in_dim = in_dim
+        self.out_dim = out_dim
+        self.arm_num = arm_num
+        self.arm_size = arm_size
         # list of arms
         self.arms = nn.ModuleList([Fan_Arm(in_dim, arm_size, id)
                                    for id in range(arm_num)])
@@ -50,7 +55,7 @@ class Superfan(nn.Module):
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
         # training params
         self.lr = 0.0001
-        self.cov_term = 0.001
+        self.corr_term = 0.001
         self.regularization_term = 0.001
 
     def forward(self, x):
@@ -71,7 +76,8 @@ class Superfan(nn.Module):
                     i_mean, j_mean = torch.mean(i_arm), torch.mean(j_arm)
                     cov = torch.dot((i_arm - i_mean), (j_arm - j_mean))
                     corr += (cov / torch.sqrt(vars[i], vars[j]))
-        return corr
+        norm_corr =  (corr / self.arm_num)
+        return norm_corr
 
     def l_p_norm(self, p):
         ''' Calcs p norm of all network weights '''
@@ -85,8 +91,10 @@ class Superfan(nn.Module):
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of correlations across latent subspaces.
         '''
-        cov = torch.sum()
-        return torch.log(torch.dot(fx, y))
+        entropy_penalty = -torch.log(torch.dot(fx, y))
+        corr_penalty = self.corr_term * self.correlations()
+        regularization_penalty = self.regularization_term * self.l_p_norm(2)
+        return (entropy_penalty + corr_penalty + regularization_penalty)
 
     def train_on_batch(self, batch):
         '''
