@@ -26,7 +26,7 @@ class Fan_Arm(nn.Module):
         self.pool_weights = torch.ones(arm_size)
         self.pool_bias = torch.ones(1, requires_grad=True)
         # vars
-        self.non_linearity = F.relu
+        self.non_linearity = F.sigmoid
         self.id = id
 
     def forward(self, x):
@@ -176,7 +176,8 @@ class Superfan(nn.Module):
 
     def color_node(self, fx):
         ''' Colors node as function of outbound activation '''
-        return 
+        print(fx)
+        return [(0, 0, min(1, fx))]
 
     def visualize_signal_prop(self, x):
         '''
@@ -186,10 +187,10 @@ class Superfan(nn.Module):
         pools = []
         for i_arm, arm in enumerate(self.arms):
             pooling, encodings = arm(x)
-            c_dict[f'pool_{i_arm}'] = pooling.detach().numpy()
-            c_dict[f'arm_{i_arm}'] = [x.detach().numpy() for x in encodings]
+            c_dict[f'pool_{i_arm}'] = self.color_node(pooling.detach().numpy())
+            c_dict[f'arm_{i_arm}'] = [self.color_node(x.detach().numpy())
+                                      for x in encodings]
             pools.append(pooling)
         fx, _ = self(x)
-        c_dict[f'center'] = fx.detach().numpy()
-        print(c_dict)
+        c_dict[f'center'] = self.color_node(fx.detach().numpy())
         self.visualize(c_dict)
