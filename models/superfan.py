@@ -51,7 +51,7 @@ class Superfan(nn.Module):
         # training params
         self.lr = 0.0001
         self.cov_term = 0.001
-        self.l2_term = 0.001
+        self.regularization_term = 0.001
 
     def forward(self, x):
         ''' Returns prediction vector from center and encodings from arms '''
@@ -60,6 +60,16 @@ class Superfan(nn.Module):
         fx = torch.mv(self.weights, aggregate_pooling) + self.bias
         fx = self.non_linearity(fx)
         return fx, encodings
+
+    def cov(self, A, B):
+        return
+
+    def l_p_norm(self, p):
+        ''' Calcs p norm of all network weights '''
+        norm = 0
+        for mat in self.parameters(recurse=True):
+            norm += torch.sum(mat.pow(p))
+        return norm
 
     def criterion(self, fx, y, encodings):
         '''
