@@ -43,24 +43,38 @@ class Superfan(nn.Module):
                                    for id in range(arm_num)])
         # weights for center
         self.weights = glorot_tensor(shape=(out_dim, arm_num))
-        self.bias = torch.zeros(out_dim)
+        self.bias = torch.zeros(out_dim, requires_grad=True)
         # activation for center
         self.non_linearity = F.relu
         # optimizers
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
+        # params
+        self.cov_penalty =
 
     def forward(self, x):
         ''' Returns prediction vector from center and encodings from arms '''
         pools, encodings = zip(*(arm(x) for arm in self.arms))
         aggregate_pooling = torch.cat(pools)
-        fx = torch.dot(self.weights, aggregate_pooling) + self.bias
+        fx = torch.mv(self.weights, aggregate_pooling) + self.bias
         fx = self.non_linearity(fx)
-        return fx,
+        return fx, encodings
 
-
-    def criterion(self, fx, y, cov_penalty):
+    def criterion(self, fx, y):
         '''
         Criterion is sum of binary crossentropy between fx and y with scaled
         sum of covariances between each arm latent subspace.
         '''
         return torch.log(torch.dot(fx, y))
+
+    def train_on_batch(self, batch):
+        '''
+        Trains all weights on batch of x, y pairs
+        '''
+        self.optimizer.zero_grad()
+        loss = 0
+        for x, y in batch:
+            fx, encodings = self(x)
+            loss += self.criterion(fx, y, encodings)
+        loss.backward()
+        self.optimizer.step()
+        return loss
