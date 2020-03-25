@@ -14,13 +14,15 @@ class Fan_Arm(nn.Module):
     Arm of Superfan network. Data is passed into arm nodes for representation
     and then pooled by pool node. Returns scalar of sub-classification.
     '''
-    def __init__(self, in_dim, arm_size):
+    def __init__(self, in_dim, arm_size, id=None):
         super(Fan_Arm, self).__init__()
         self.arm = glorot_tensor(shape=(arm_size, in_dim))
         self.pool = torch.zeros(arm_size)
+        self.non_linearity = F.relu
+        self.id = None
 
     def forward(self, x):
-        return torch.dot(self.pool, torch.mv(self.arm, x))
+        return self.non_linearity(torch.dot(self.pool, torch.mv(self.arm, x)))
 
 
 class Superfan(nn.Module):
@@ -29,10 +31,12 @@ class Superfan(nn.Module):
     '''
     def __init__(self, in_dim, out_dim, arm_num, arm_size):
         super(Superfan, self).__init__()
-        self.arm = glorot_tensor(shape=(in_dim, arm_size))
-        self.pool = glorot_tensor(shape=(arm_size,))
+        self.arms = nn.ModuleList([Fan_Arm(in_dim, arm_size, id)
+                                   for id in range(arm_num)])
         self.center = glorot_tensor(shape=(arm_num, out_dim))
-        self.arms = nn.ModuleList([])
+
+    def forward(self, x):
+
 
     def criterion(self, fx, y, cov_penalty):
         '''
