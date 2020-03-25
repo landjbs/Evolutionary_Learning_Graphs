@@ -48,8 +48,10 @@ class Superfan(nn.Module):
         self.non_linearity = F.relu
         # optimizers
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
-        # params
-        self.cov_penalty =
+        # training params
+        self.lr = 0.0001
+        self.cov_term = 0.001
+        self.l2_term = 0.001
 
     def forward(self, x):
         ''' Returns prediction vector from center and encodings from arms '''
@@ -59,11 +61,12 @@ class Superfan(nn.Module):
         fx = self.non_linearity(fx)
         return fx, encodings
 
-    def criterion(self, fx, y):
+    def criterion(self, fx, y, encodings):
         '''
         Criterion is sum of binary crossentropy between fx and y with scaled
-        sum of covariances between each arm latent subspace.
+        sum of covariances across latent subspaces.
         '''
+        cov = torch.sum()
         return torch.log(torch.dot(fx, y))
 
     def train_on_batch(self, batch):
@@ -78,3 +81,5 @@ class Superfan(nn.Module):
         loss.backward()
         self.optimizer.step()
         return loss
+
+    def train()
