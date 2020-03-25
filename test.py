@@ -13,7 +13,7 @@ def make_batch(n, in_dim, out_dim):
     return batch
 
 
-in_dim = 1
+in_dim = 2
 out_dim = 1
 
 batch = make_batch(10000, in_dim, out_dim)
@@ -25,5 +25,5 @@ batch = make_batch(10000, in_dim, out_dim)
 # plt.show()
 
 z = Superfan(in_dim=in_dim, out_dim=out_dim, arm_num=6, arm_size=5)
-z.visualize()
+z.visualize_signal_prop(batch[0][0])
 # z.train(batch, 100, 10)

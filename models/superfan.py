@@ -129,19 +129,24 @@ class Superfan(nn.Module):
         plt.show()
 
     # visualization
-    def visualize(self, colors):
+    def visualize(self, c_dict=None):
         '''
         Visualizes network with variable number arms and arm sizes.
         Args:
-            cDict:      Dict mapping 'center', 'pool_i', and 'arm_i' to colors
+            c_dict:      Dict mapping 'center', 'pool_i', and 'arm_i' to colors
         '''
+        if not c_dict:
+            c_dict = {'center' : 'black'}
+            for i in range(self.arm_num):
+                c_dict[f'pool_{i}'] = 'blue'
+                c_dict[f'arm_{i}'] = ['red' for _ in range(self.arm_size)]
         # basic params
         c = (0, 0)                              # center coordinates
         c_rad = 0.2                             # little radius around center
         r = 1                                   # max length of arm
         plt.ylim((-r, r))
         plt.xlim((-r, r))
-        plt.scatter(c[0], c[1], c='black', zorder=20)
+        plt.scatter(c[0], c[1], c=c_dict['center'], zorder=20)
         # choose sizing for fan size
         theta = (2 * math.pi / self.arm_num)    # angle between each arm
         theta_delt = (theta / 3)                # angle between arm and pool
@@ -149,17 +154,18 @@ class Superfan(nn.Module):
         pool_r = (r / 2)                        # distance center -> pool
         # plot each arm
         theta_acc = 0                           # accumulator for angles
-        for arm in self.arms:
+        for arm in range(self.arm_num):
             pool_x = pool_r * math.cos(theta_acc)
             pool_y = pool_r * math.sin(theta_acc)
-            plt.scatter(pool_x, pool_y, color='blue', zorder=10)
+            plt.scatter(pool_x, pool_y, color=c_dict[f'pool_{arm}'], zorder=10)
             plt.plot([pool_x, c[0]], [pool_y, c[1]])
             theta_acc += theta_delt
             r_acc = c_rad
             for arm_node in range(self.arm_size):
                 arm_x = r_acc * math.cos(theta_acc)
                 arm_y = r_acc * math.sin(theta_acc)
-                plt.scatter(arm_x, arm_y, color='red', zorder=10)
+                plt.scatter(arm_x, arm_y, color=c_dict[f'arm_{arm}'][arm_node],
+                            zorder=10)
                 # print([arm_x, arm_y], [0, 0])
                 plt.plot([arm_x, pool_x], [arm_y, pool_y], zorder=5)
                 r_acc += r_delt
@@ -168,8 +174,22 @@ class Superfan(nn.Module):
         plt.axis('off')
         plt.show()
 
+    def color_node(self, fx):
+        ''' Colors node as function of outbound activation '''
+        return 
+
     def visualize_signal_prop(self, x):
         '''
         Visualizes propagation of signal through network
         '''
-        
+        c_dict = {}
+        pools = []
+        for i_arm, arm in enumerate(self.arms):
+            pooling, encodings = arm(x)
+            c_dict[f'pool_{i_arm}'] = pooling.detach().numpy()
+            c_dict[f'arm_{i_arm}'] = [x.detach().numpy() for x in encodings]
+            pools.append(pooling)
+        fx, _ = self(x)
+        c_dict[f'center'] = fx.detach().numpy()
+        print(c_dict)
+        self.visualize(c_dict)
