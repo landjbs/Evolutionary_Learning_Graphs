@@ -20,7 +20,7 @@ class Fan_Arm(nn.Module):
         self.arm_weights = glorot_tensor(shape=(arm_size, in_dim))
         self.arm_bias = torch.zeros(arm_size, requires_grad=True)
         # pool weights
-        self.pool_mat = torch.zeros(arm_size)
+        self.pool_weights = torch.zeros(arm_size)
         self.pool_bias = torch.zeros(1, requires_grad=True)
         # vars
         self.non_linearity = F.relu
@@ -36,16 +36,26 @@ class Superfan(nn.Module):
     '''
     Applies "superfan" architecture to regression.
     '''
-    def __init__(self, in_dim, out_dim, arm_num, arm_size):
+    def __init__(self, in_dim, out_dim, arm_num, arm_size, lr):
         super(Superfan, self).__init__()
-        # weights
+        # list of arms
         self.arms = nn.ModuleList([Fan_Arm(in_dim, arm_size, id)
                                    for id in range(arm_num)])
-        self.center = glorot_tensor(shape=(arm_num, out_dim))
-
+        # weights for center
+        self.weights = glorot_tensor(shape=(out_dim, arm_num))
+        self.bias = torch.zeros(out_dim)
+        # activation for center
+        self.non_linearity = F.relu
+        # optimizers
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
 
     def forward(self, x):
-
+        ''' Returns prediction vector from center and encodings from arms '''
+        pools, encodings = zip(*(arm(x) for arm in self.arms))
+        aggregate_pooling = torch.cat(pools)
+        fx = torch.dot(self.weights, aggregate_pooling) + self.bias
+        fx = self.non_linearity(fx)
+        return fx,
 
 
     def criterion(self, fx, y, cov_penalty):
