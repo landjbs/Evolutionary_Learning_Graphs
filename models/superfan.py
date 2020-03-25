@@ -130,18 +130,25 @@ class Superfan(nn.Module):
 
     # visualization
     def visualize(self):
+        # basic params
+        c = (0, 0)                              # center coordinates
+        c_rad = 0.2                             # little radius around center
+        r = 1                                   # max length of arm
+        plt.ylim((-r, r))
+        plt.xlim((-r, r))
         # choose sizing for fan size
         theta = (math.pi / self.arm_num)        # angle between each arm
         theta_delt = (theta / 3)                # angle between arm and pool
-        r = 1                                   # max length of arm
-        c = (0, 0)                                 # center coordinates
+        r_delt = ((r - c_rad) / self.arm_size)  # distance between arm nodes
+        pool_r = (r / 2)                        # distance center -> pool
         # plot each arm
-        theta_acc = 0
+        theta_acc = 0                           # accumulator for angles
         for arm in self.arms:
-            
+            pool_x = pool_r * math.sin(theta_acc)
+            pool_y = poo_r * math.cos(theta_acc)
+            theta_acc += theta_delt
+            for arm_node in range(len())
+                
 
-
-        plt.ylim((-r, r))
-        plt.xlim((-r, r))
         plt.scatter(x, y, s=60, c=c, edgecolor=edgeColor, linewidths=1.3,
                         zorder=10)
