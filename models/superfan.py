@@ -127,3 +127,6 @@ class Superfan(nn.Module):
         plt.plot(losses)
         plt.title('Losses')
         plt.show()
+
+    def visualize(self):
+        
