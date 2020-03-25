@@ -17,12 +17,16 @@ class Fan_Arm(nn.Module):
     def __init__(self, in_dim, arm_size, id=None):
         super(Fan_Arm, self).__init__()
         self.arm = glorot_tensor(shape=(arm_size, in_dim))
+        self.arm_bias = torch.zeros(arm_size)
         self.pool = torch.zeros(arm_size)
+        self.pool_bias = torch.zeros(1)
         self.non_linearity = F.relu
         self.id = None
 
     def forward(self, x):
-        return self.non_linearity(torch.dot(self.pool, torch.mv(self.arm, x)))
+        arm_encoding = torch.mv(self.arm, x) + self.arm_bias
+        pool_encoding = torch.dot(self.pool, arm_encoding) + self.pool_bias
+        return self.non_linearity(pool_encoding), arm_encoding
 
 
 class Superfan(nn.Module):
