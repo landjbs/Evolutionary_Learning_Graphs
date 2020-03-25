@@ -8,7 +8,7 @@ def make_batch(n, in_dim, out_dim):
     batch = []
     for _ in range(n):
         x = torch.rand(in_dim)
-        y = torch.tensor(torch.sum(x))
+        y = torch.tensor([torch.sum(x)])
         batch.append((x, y))
     return batch
 
