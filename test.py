@@ -18,12 +18,12 @@ out_dim = 1
 
 batch = make_batch(100, in_dim, out_dim)
 
-import matplotlib.pyplot as plt
-x = [b[0].item() for b in batch]
-y = [b[1].item() for b in batch]
+# import matplotlib.pyplot as plt
+# x = [b[0].item() for b in batch]
+# y = [b[1].item() for b in batch]
 # plt.scatter(x, y)
 # plt.show()
 
 z = Superfan(in_dim=in_dim, out_dim=out_dim, arm_num=4, arm_size=5)
 
-z.train(batch, 100, 10)
+z.train(batch, 10000, 10)
