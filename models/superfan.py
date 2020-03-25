@@ -148,14 +148,15 @@ class Superfan(nn.Module):
             pool_x = pool_r * math.cos(theta_acc)
             pool_y = pool_r * math.sin(theta_acc)
             plt.scatter(pool_x, pool_y, color='blue', zorder=10)
-            plt.plot([pool_x, pool_y], [c[0], c[1]])
+            plt.plot([pool_x, c[0]], [pool_y, c[1]])
             theta_acc += theta_delt
             r_acc = c_rad
             for arm_node in range(self.arm_size):
                 arm_x = r_acc * math.cos(theta_acc)
                 arm_y = r_acc * math.sin(theta_acc)
                 plt.scatter(arm_x, arm_y, color='red', zorder=10)
-                plt.plot([arm_x, arm_y], [pool_x, pool_y], zorder=5)
+                # print([arm_x, arm_y], [0, 0])
+                plt.plot([arm_x, pool_x], [arm_y, pool_y], zorder=5)
                 r_acc += r_delt
             theta_acc += (theta - theta_delt)
         plt.show()
