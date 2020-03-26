@@ -125,8 +125,10 @@ class Superfan(nn.Module):
                                                     size=(batch_size,))]
             loss = self.train_on_batch(batch)
             losses.append(loss.item())
-            if ((i % 10) == 0):
+            plt.pause(0.05)
+            if ((i % 2) == 0):
                 self.visualize_signal_prop(batch[0][0])
+        plt.show()
         plt.plot(losses)
         plt.title('Losses')
         plt.show()
@@ -175,7 +177,6 @@ class Superfan(nn.Module):
             theta_acc += (theta - theta_delt)
         plt.title('Network')
         plt.axis('off')
-        plt.show()
 
     def color_node(self, fx):
         ''' Colors node as function of outbound activation '''
