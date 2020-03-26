@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from tqdm import trange
+import numpy as np
 
 
 def glorot_tensor(shape):
@@ -119,11 +120,13 @@ class Superfan(nn.Module):
     def train(self, data, epochs, batch_size):
         data_size = len(data)
         losses = []
-        for _ in trange(epochs):
+        for i in trange(epochs):
             batch = [data[i] for i in torch.randint(0, data_size,
                                                     size=(batch_size,))]
             loss = self.train_on_batch(batch)
             losses.append(loss.item())
+            if ((i % 10) == 0):
+                self.visualize_signal_prop(batch[0][0])
         plt.plot(losses)
         plt.title('Losses')
         plt.show()
@@ -146,7 +149,7 @@ class Superfan(nn.Module):
         r = 1                                   # max length of arm
         plt.ylim((-r, r))
         plt.xlim((-r, r))
-        # plt.scatter(c[0], c[1], c=c_dict['center'], zorder=20)
+        plt.scatter(c[0], c[1], c=c_dict['center'], zorder=20)
         # choose sizing for fan size
         theta = (2 * math.pi / self.arm_num)    # angle between each arm
         theta_delt = (theta / 3)                # angle between arm and pool
@@ -176,10 +179,8 @@ class Superfan(nn.Module):
 
     def color_node(self, fx):
         ''' Colors node as function of outbound activation '''
-        if isinstance(fx, list):
-            assert len(fx)==1, f'{fx} is not valid input to color_node'
-            fx = fx[0]
-        return [(0, 0, min(0.9, fx))]
+        fx = max(0.001, min(1, float(fx)))
+        return [[0, 0, fx]]
 
     def visualize_signal_prop(self, x):
         '''
